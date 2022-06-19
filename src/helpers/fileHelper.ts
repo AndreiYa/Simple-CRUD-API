@@ -16,8 +16,6 @@ export const createDatabase = async () => {
   if (!fileExists()) {
     await mkdir('./src/data', {recursive: true});
     await writeFile(path, JSON.stringify([]));
-  } else {
-    console.log('database already exists!');
   }
 }
 
@@ -29,6 +27,7 @@ export const fileWrite = async (res: any, data: IUser[], sender: any) => {
   const jsonData = JSON.stringify(data, null, 2);
   try {
     await writeFile(path, jsonData);
+    console.log(sender)
     sender(res, 201, data)
   } catch (err) {
     sender(res, 500, {message: 'Server internal error'})
@@ -54,4 +53,8 @@ export const getDB = async () => {
   } catch (err: any) {
     console.error(err.message)
   }
+}
+
+export const validateReq = (user: IUser) => {
+  return !!(user.username && user.age && user.hobbies);
 }

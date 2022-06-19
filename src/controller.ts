@@ -1,5 +1,5 @@
 import {IncomingMessage, ServerResponse} from "http";
-import {fileWrite, getDB, getUserIdx, sendResponse, validateUser} from './helpers/fileHelper';
+import {fileWrite, getDB, getUserIdx, sendResponse, validateReq, validateUser} from './helpers/fileHelper';
 import {IUser} from "./IUser";
 import {v4 as uuidv4} from 'uuid';
 
@@ -37,10 +37,14 @@ export const addUser = async (req: IncomingMessage, res: ServerResponse) => {
         sendResponse(res, 400, 'Body can`t be empty')
       }
       let user: IUser = JSON.parse(data);
-      user.id = uuidv4();
       if (!await validateUser(user, await getDB())) {
-        const users: IUser[] = [user, ...await getDB()];
-        await fileWrite(res, users, sendResponse);
+        user.id = uuidv4();
+        if (validateReq(user)) {
+          const users: IUser[] = [user, ...await getDB()];
+          await fileWrite(res, users, sendResponse);
+        } else {
+          sendResponse(res, 422, {message: 'name, age, hobbies is required'});
+        }
       } else {
         sendResponse(res, 422, {message: 'User already exist'});
       }
