@@ -7,7 +7,9 @@ import cluster from "node:cluster";
 
 dotenv.config({ path: __dirname+'/.env'});
 const PORT = process.env.PORT || 6000;
-const MULTI = process.env.MULTI;
+const CLUSTER_MODE = process.argv.slice(2)
+  .find(value => value
+    .includes('--multi'))?.split('=')[1] === 'true' || false;
 
 const db = async () => {
   await createDatabase();
@@ -30,17 +32,17 @@ db().then(() => {
     }
   });
 
-  if (MULTI === 'true') {
+  if (CLUSTER_MODE) {
     if (cluster.isPrimary) {
       for (let i = 0; i < cpus().length; i++) {
         cluster.fork();
       }
       cluster.on('exit', (worker, code) => {
         console.log(`Worker ${worker.id} finish work. Exit with code: ${code}`);
-        server.listen(process.env.PORT, () => console.log(`Worker ${cluster.worker?.id} started`));
+        server.listen(process.env.PORT, () => console.log(`Cluster ${cluster.worker?.id} started`));
       });
     } else {
-      server.listen(process.env.PORT, () => console.log(`Worker ${cluster.worker?.id} started`));
+      server.listen(process.env.PORT, () => console.log(`Cluster ${cluster.worker?.id} started`));
     }
   } else {
     server.listen(process.env.PORT, () => console.log(`Server is running on port ${PORT}`));
