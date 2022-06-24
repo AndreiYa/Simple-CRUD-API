@@ -21,11 +21,11 @@ db().then(() => {
       return getUsers(req, res);
     } else if (req.method === 'GET' && req.url?.match(/\/api\/users\/(\w+)/)) {
       return getUserById(req, res);
-    } else if (req.method == "POST" && req.url == "/api/users") {
+    } else if (req.method === "POST" && req.url == "/api/users") {
       return addUser(req, res);
-    } else if (req.method == "PUT" && req.url?.match(/\/api\/users\/(\w+)/)) {
+    } else if (req.method === "PUT" && req.url?.match(/\/api\/users\/(\w+)/)) {
       return updateUser(req, res);
-    } else if (req.method == "DELETE" && req.url?.match(/\/api\/users\/(\w+)/)) {
+    } else if (req.method === "DELETE" && req.url?.match(/\/api\/users\/(\w+)/)) {
       return deleteUser(req, res);
     } else {
       return notFound(req, res);

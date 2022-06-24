@@ -70,6 +70,7 @@ export const updateUser = async (req: IncomingMessage, res: ServerResponse) => {
       if (userIdx === -1) {
         sendResponse(res, 404, 'User not found')
       }
+      user.id = id as string;
       const db = await getDB();
       db[userIdx] = user;
       await fileWrite(res, db, sendResponse);
@@ -80,17 +81,14 @@ export const updateUser = async (req: IncomingMessage, res: ServerResponse) => {
 }
 export const deleteUser = async (req: IncomingMessage, res: ServerResponse) => {
   try {
-    req.on('end', async () => {
       const id = req.url?.split("/")[3];
-      console.log(id)
       const userIdx = await getUserIdx(id as string, await getDB());
-      if (!userIdx) {
+      if (userIdx === -1) {
         sendResponse(res, 404, {message: 'User not found'});
       }
       const db = await getDB();
       db.splice(userIdx, 1);
       await fileWrite(res, db, sendResponse);
-    })
   } catch {
     sendResponse(res, 500, {message: 'Internal server error'});
   }

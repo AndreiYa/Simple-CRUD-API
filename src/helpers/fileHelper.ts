@@ -27,7 +27,6 @@ export const fileWrite = async (res: any, data: IUser[], sender: any) => {
   const jsonData = JSON.stringify(data, null, 2);
   try {
     await writeFile(path, jsonData);
-    console.log(sender)
     sender(res, 201, data)
   } catch (err) {
     sender(res, 500, {message: 'Server internal error'})
